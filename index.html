@@ -2,45 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Glucose Tracker</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
+        html, body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f5f5f5;
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
+            width: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            padding: 12px;
+            max-width: 100%;
         }
         .app-header {
             position: relative;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            padding-right: 50px;
         }
         h1 {
             color: #1976d2;
+            font-size: 22px;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .icon-btn {
             position: absolute;
             right: 0;
             top: 50%;
             transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: 2px solid #1976d2;
             background: white;
             color: #1976d2;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
         .icon-btn:hover {
             background: #1976d2;
@@ -48,18 +56,19 @@
         }
         .mode-toggle {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 12px;
             justify-content: center;
         }
         .mode-btn {
-            padding: 8px 20px;
+            padding: 8px 16px;
             border: 2px solid #1976d2;
             background: white;
             color: #1976d2;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 500;
         }
         .mode-btn.active {
             background: #1976d2;
@@ -67,16 +76,21 @@
         }
         .input-section {
             background: white;
-            padding: 20px;
+            padding: 16px;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            width: 100%;
         }
         .input-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            align-items: end;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        @media (min-width: 400px) {
+            .input-grid {
+                grid-template-columns: 1fr 1fr;
+            }
         }
         .input-group {
             display: flex;
@@ -92,9 +106,10 @@
             padding: 10px 12px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 16px;
             outline: none;
             width: 100%;
+            -webkit-appearance: none;
         }
         input:focus, select:focus {
             border-color: #1976d2;
@@ -104,32 +119,37 @@
             align-items: center;
             gap: 8px;
             padding: 10px 0;
+            flex-wrap: wrap;
         }
         .checkbox-group input[type="checkbox"] {
             width: 20px;
             height: 20px;
             cursor: pointer;
+            flex-shrink: 0;
         }
         .checkbox-group label {
-            font-size: 14px;
+            font-size: 13px;
             color: #555;
             cursor: pointer;
             user-select: none;
+            line-height: 1.4;
         }
         .actions-row {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 8px;
+            margin-top: 12px;
             flex-wrap: wrap;
-            align-items: center;
         }
-        button {
-            padding: 10px 20px;
+        .actions-row button {
+            padding: 10px 16px;
             border: none;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             transition: opacity 0.2s;
+            flex: 1;
+            min-width: 100px;
+            font-weight: 500;
         }
         button:hover { opacity: 0.9; }
         .btn-primary {
@@ -148,65 +168,90 @@
             background: #f44336;
             color: white;
             padding: 5px 10px;
-            font-size: 13px;
+            font-size: 12px;
+            flex: none;
+            min-width: auto;
+        }
+
+        /* Table Container - Horizontal Scroll */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+        }
+        .table-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
         }
         table {
             width: 100%;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 600px;
             border-collapse: collapse;
         }
         th {
             background: #1976d2;
             color: white;
-            padding: 14px;
+            padding: 12px 10px;
             text-align: left;
             font-weight: 600;
+            font-size: 13px;
+            white-space: nowrap;
         }
         td {
-            padding: 12px 14px;
+            padding: 10px;
             border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+            vertical-align: middle;
         }
         tr:hover { background: #f8f9fa; }
         .badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
+            white-space: nowrap;
         }
         .badge-am { background: #fff3e0; color: #e65100; }
         .badge-pm { background: #e8eaf6; color: #283593; }
         .tag-post {
             background: #e91e63;
             color: white;
-            padding: 3px 10px;
+            padding: 3px 8px;
             border-radius: 12px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
+            white-space: nowrap;
         }
         .tag-post::before {
             content: "📌";
+            font-size: 10px;
         }
         .tag-fasting {
             background: #9e9e9e;
             color: white;
-            padding: 3px 10px;
+            padding: 3px 8px;
             border-radius: 12px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
+            white-space: nowrap;
         }
         .value-low { color: #d32f2f; font-weight: bold; }
         .value-normal { color: #388e3c; font-weight: bold; }
         .value-high { color: #f57c00; font-weight: bold; }
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 50px 20px;
             color: #757575;
             background: white;
             border-radius: 12px;
@@ -216,42 +261,45 @@
             display: flex;
             justify-content: space-around;
             background: white;
-            padding: 16px;
+            padding: 14px 10px;
             border-radius: 12px;
-            margin-top: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            gap: 8px;
         }
         .stat {
             text-align: center;
+            flex: 1;
         }
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #757575;
             margin-bottom: 4px;
         }
         .stat-value {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
         }
         .legend {
             background: white;
-            padding: 16px 20px;
+            padding: 14px 16px;
             border-radius: 12px;
-            margin-top: 15px;
+            margin-top: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            font-size: 14px;
+            font-size: 13px;
             color: #555;
         }
         .legend-title {
             font-weight: 600;
             color: #333;
             margin-bottom: 8px;
+            font-size: 14px;
         }
         .legend-item {
             display: flex;
             align-items: center;
             gap: 8px;
             margin: 4px 0;
+            flex-wrap: wrap;
         }
         #fileInput { display: none; }
         .date-cell { font-weight: 600; white-space: nowrap; }
@@ -267,7 +315,7 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            padding: 20px;
+            padding: 16px;
         }
         .modal-overlay.active {
             display: flex;
@@ -275,7 +323,7 @@
         .modal {
             background: white;
             border-radius: 16px;
-            max-width: 600px;
+            max-width: 500px;
             width: 100%;
             max-height: 85vh;
             overflow-y: auto;
@@ -289,14 +337,14 @@
         .modal-header {
             background: #1976d2;
             color: white;
-            padding: 20px 24px;
+            padding: 16px 20px;
             border-radius: 16px 16px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .modal-header h2 {
-            font-size: 20px;
+            font-size: 18px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -305,10 +353,10 @@
             background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            font-size: 24px;
+            font-size: 22px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -318,67 +366,68 @@
             background: rgba(255,255,255,0.3);
         }
         .modal-body {
-            padding: 24px;
+            padding: 20px;
         }
         .modal-section {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         .modal-section:last-child {
             margin-bottom: 0;
         }
         .modal-section h3 {
             color: #1976d2;
-            font-size: 16px;
-            margin-bottom: 10px;
+            font-size: 15px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         .modal-section p, .modal-section li {
             color: #555;
-            line-height: 1.7;
-            font-size: 14px;
+            line-height: 1.6;
+            font-size: 13px;
         }
         .modal-section ul {
-            margin-left: 20px;
+            margin-left: 16px;
         }
         .modal-section li {
-            margin: 6px 0;
+            margin: 4px 0;
         }
         .highlight-box {
             background: #e3f2fd;
             border-left: 4px solid #1976d2;
-            padding: 14px 18px;
+            padding: 12px 14px;
             border-radius: 8px;
-            margin: 10px 0;
+            margin: 8px 0;
         }
         .donate-box {
             background: #fff8e1;
             border: 2px dashed #ff9800;
-            padding: 20px;
+            padding: 16px;
             border-radius: 12px;
             text-align: center;
         }
         .donate-box h4 {
             color: #e65100;
-            margin-bottom: 12px;
-            font-size: 18px;
+            margin-bottom: 10px;
+            font-size: 16px;
         }
         .upi-id {
             background: white;
-            padding: 10px 20px;
+            padding: 8px 14px;
             border-radius: 8px;
             font-family: monospace;
-            font-size: 16px;
+            font-size: 14px;
             color: #333;
-            margin: 8px 0;
+            margin: 6px 0;
             display: inline-block;
             border: 1px solid #ffcc80;
+            word-break: break-all;
         }
         .shortcut-hint {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 16px;
+            right: 16px;
             background: #333;
             color: white;
             padding: 8px 14px;
@@ -387,6 +436,7 @@
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
+            z-index: 999;
         }
         .shortcut-hint.show {
             opacity: 0.8;
@@ -433,7 +483,7 @@
 
     <div id="tableContainer">
         <div class="empty-state">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:16px;opacity:0.5;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:12px;opacity:0.5;">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
                 <path d="M3 9h18M9 21V9"/>
             </svg>
@@ -484,7 +534,7 @@
                     <h3>🩸 App Intro</h3>
                     <div class="highlight-box">
                         <p><strong>Free</strong> · No ads · No account · No internet · No permissions</p>
-                        <p style="margin-top:8px;">A simple, private glucose tracker that works entirely on your device. Your data never leaves your browser unless you choose to export it.</p>
+                        <p style="margin-top:6px;">A simple, private glucose tracker that works entirely on your device. Your data never leaves your browser unless you choose to export it.</p>
                     </div>
                 </div>
 
@@ -514,7 +564,7 @@
                 <div class="modal-section">
                     <h3>💡 Suggestions</h3>
                     <p>Have ideas to improve this app? Found a bug? Want a new feature?</p>
-                    <p style="margin-top:8px;"><strong>Write to me</strong> — I read every message and appreciate your feedback!</p>
+                    <p style="margin-top:6px;"><strong>Write to me</strong> — I read every message and appreciate your feedback!</p>
                 </div>
 
                 <div class="modal-section">
@@ -534,7 +584,7 @@
                         <p>If you find this app helpful, consider buying me a coffee!</p>
                         <div class="upi-id">UPI / GPay: upparamani@gmail.com</div>
                         <div class="upi-id">UPI / GPay: 9242266764</div>
-                        <p style="margin-top:10px; font-size:13px; color:#777;">Every contribution keeps this app free and ad-free. Thank you! 🙏</p>
+                        <p style="margin-top:8px; font-size:12px; color:#777;">Every contribution keeps this app free and ad-free. Thank you! 🙏</p>
                     </div>
                 </div>
 
@@ -680,7 +730,7 @@
             if (readings.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:16px;opacity:0.5;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:12px;opacity:0.5;">
                             <rect x="3" y="3" width="18" height="18" rx="2"/>
                             <path d="M3 9h18M9 21V9"/>
                         </svg>
@@ -692,20 +742,20 @@
                 return;
             }
 
-            let html = '<table><thead><tr>' +
+            let html = '<div class="table-wrapper"><table><thead><tr>' +
                 '<th>Tag</th>' +
-                '<th>Date (dd.mm.yyyy)</th>' +
+                '<th>Date</th>' +
                 '<th>Time</th>' +
-                '<th>AM / PM</th>' +
-                '<th>Value (mg/dL)</th>' +
-                '<th>Actions</th>' +
+                '<th>AM/PM</th>' +
+                '<th>Value</th>' +
+                '<th>Action</th>' +
                 '</tr></thead><tbody>';
 
             readings.forEach((reading, index) => {
                 const period = getPeriod(reading.timestamp);
                 const tagHtml = reading.isPostMeal 
-                    ? '<span class="tag-post">POST-MEAL</span>' 
-                    : '<span class="tag-fasting">FASTING</span>';
+                    ? '<span class="tag-post">POST</span>' 
+                    : '<span class="tag-fasting">FAST</span>';
                 
                 html += `<tr>
                     <td>${tagHtml}</td>
@@ -713,17 +763,17 @@
                     <td class="time-cell">${formatTime(reading.timestamp)}</td>
                     <td><span class="badge badge-${period.toLowerCase()}">${period}</span></td>
                     <td class="${getValueColor(reading.value)}">${reading.value.toFixed(1)}</td>
-                    <td><button class="btn-delete" onclick="deleteReading(${index})">Delete</button></td>
+                    <td><button class="btn-delete" onclick="deleteReading(${index})">Del</button></td>
                 </tr>`;
             });
 
-            html += '</tbody></table>';
+            html += '</tbody></table></div>';
             container.innerHTML = html;
             
             const values = readings.map(r => r.value);
-            document.getElementById('statLatest').textContent = values[0].toFixed(1) + ' mg/dL';
+            document.getElementById('statLatest').textContent = values[0].toFixed(1);
             document.getElementById('statLatest').className = 'stat-value ' + getValueColor(values[0]);
-            document.getElementById('statAvg').textContent = (values.reduce((a,b) => a+b, 0) / values.length).toFixed(1) + ' mg/dL';
+            document.getElementById('statAvg').textContent = (values.reduce((a,b) => a+b, 0) / values.length).toFixed(1);
             document.getElementById('statCount').textContent = readings.length;
             statsContainer.style.display = 'block';
             legendBox.style.display = 'block';
